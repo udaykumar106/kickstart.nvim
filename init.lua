@@ -89,6 +89,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = false
@@ -100,6 +102,7 @@ vim.g.have_nerd_font = false
 
 -- Make line numbers default
 vim.opt.number = true
+vim.opt.relativenumber = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
@@ -228,6 +231,11 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
+  -- Git related plugins
+    'tpope/vim-fugitive',
+    'tpope/vim-rhubarb',
+    'github.com/copilot.vim'
+    
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -237,6 +245,17 @@ require('lazy').setup({
   --  This is equivalent to:
   --    require('Comment').setup({})
 
+  {
+      'nvim-tree/nvim-tree.lua',
+      version = '*',
+      lazy = false,
+      dependencies = {
+        'nvim-tree/nvim-web-devicons',
+      },
+      config = function()
+        require('nvim-tree').setup {}
+      end,
+  },
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
@@ -735,6 +754,14 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          {
+              name = 'buffer',
+              option = {
+                get_bufnrs = function()
+                  return vim.api.nvim_list_bufs
+                end,
+              },
+          },
         },
       }
     end,
@@ -872,3 +899,10 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+vim.api.nvim_set_keymap('n', '<leader>fe', ':NvimTreeToggle<cr>', { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<C-s>', ':w<cr>', { silent = true, noremap = true })
+
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldenable = false
